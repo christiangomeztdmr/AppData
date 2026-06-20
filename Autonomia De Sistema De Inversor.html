@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Autonomía de Sistema de Inversor en Botes 43ft</title>
+<script>
+(function(){
+  var t='light';
+  try{t=localStorage.getItem('inv-theme')||'light';}catch(e){}
+  document.documentElement.setAttribute('data-theme',t);
+})();
+</script>
+<script id="app-data" type="application/json">
+{
+  "adminHash": "da9b5f69dc04c4c44267bef22b4cffff1418c68cadc257c4be036d7c0d1a21ae",
+  "price200": 4720000, "price300": 6232000,
+  "gtx10Nominal": 1320, "dutyCycle": 0.83,
+  "microwatts": 1250, "microDurationMin": 30,
+  "rows": [
+    {"target":1,"label":"1\u00d7 200Ah","qty200":1,"qty300":0,"type":"best"},
+    {"target":2,"label":"1\u00d7 300Ah","qty200":0,"qty300":1,"type":"best"},
+    {"target":3,"label":"2\u00d7 200Ah","qty200":2,"qty300":0,"type":"best"},
+    {"target":4,"label":"1\u00d7 200Ah + 1\u00d7 300Ah","qty200":1,"qty300":1,"type":"best"},
+    {"target":4,"label":"2\u00d7 300Ah","qty200":0,"qty300":2,"type":"alt"},
+    {"target":5,"label":"2\u00d7 300Ah","qty200":0,"qty300":2,"type":"border"},
+    {"target":5,"label":"2\u00d7 200Ah + 1\u00d7 300Ah","qty200":2,"qty300":1,"type":"best"},
+    {"target":6,"label":"1\u00d7 200Ah + 2\u00d7 300Ah","qty200":1,"qty300":2,"type":"best"},
+    {"target":6,"label":"4\u00d7 200Ah","qty200":4,"qty300":0,"type":"alt"},
+    {"target":7,"label":"3\u00d7 300Ah","qty200":0,"qty300":3,"type":"best"},
+    {"target":7,"label":"3\u00d7 200Ah + 1\u00d7 300Ah","qty200":3,"qty300":1,"type":"alt"},
+    {"target":8,"label":"2\u00d7 200Ah + 2\u00d7 300Ah","qty200":2,"qty300":2,"type":"best"},
+    {"target":9,"label":"1\u00d7 200Ah + 3\u00d7 300Ah","qty200":1,"qty300":3,"type":"best"},
+    {"target":10,"label":"4\u00d7 300Ah","qty200":0,"qty300":4,"type":"best"},
+    {"target":11,"label":"2\u00d7 200Ah + 3\u00d7 300Ah","qty200":2,"qty300":3,"type":"best"},
+    {"target":12,"label":"1\u00d7 200Ah + 4\u00d7 300Ah","qty200":1,"qty300":4,"type":"best"},
+    {"target":12,"label":"5\u00d7 300Ah","qty200":0,"qty300":5,"type":"alt"}
+  ]
+}
+</script>
+<style>
+/* ══ TEMA CLARO — gris profesional ══════════════════════ */
+:root,[data-theme="light"]{
+  --bg:#f5f5f5;    --sf:#ffffff;   --bd:#d4d4d4;
+  --ac:#374151;    /* gris oscuro — reemplaza teal  */
+  --tx:#111827;    --tx2:#374151;  --mu:#4b5563;
+  --gn:#374151;    --go:#6b5a3e;   --re:#9b1c1c;
+  --rb-best:#f0f4f0; --rb-alt:#fafafa; --rb-bor:#fdf8f0;
+  --rc-best:#6b7280; --rc-alt:#d4d4d4; --rc-bor:#c9a96e;
+  --inner:#efefef; --tbox:#e8e8e8; --btrack:#d4d4d4;
+  --h1:#111827;    --shadow:0 1px 2px rgba(0,0,0,.06);
+  --edit-bg:#e8edf5; --edit-col:#374151;
+  --del-bg:#f5e8e8;  --del-col:#9b1c1c;
+  --ar-bg:#fef5f5;   --ar-bd:#e8b4b4; --ar-tx:#7f1d1d;
+  --ab-bg:#f0f0f0;   --ab-tx:#4b5563;
+}
+/* ══ TEMA OSCURO — negro ceniza ═════════════════════════ */
+[data-theme="dark"]{
+  --bg:#141414;    --sf:#1f1f1f;   --bd:#2e2e2e;
+  --ac:#8a9ea0;    /* teal muy apagado */
+  --tx:#c9c9c9;    --tx2:#9ca3af;  --mu:#6b7280;
+  --gn:#6aaf8a;    --go:#a8845a;   --re:#c87070;
+  --rb-best:#111f11; --rb-alt:#1e1e1e; --rb-bor:#1e1800;
+  --rc-best:#4a7a5a; --rc-alt:#3a3a3a; --rc-bor:#8a6030;
+  --inner:#0a0a0a; --tbox:#0a0a0a; --btrack:#2e2e2e;
+  --h1:#d1d5db;    --shadow:none;
+  --edit-bg:#162030; --edit-col:#8a9ea0;
+  --del-bg:#2a1010;  --del-col:#c87070;
+  --ar-bg:#1a0808;   --ar-bd:#7f1d1d; --ar-tx:#e8b4b4;
+  --ab-bg:#0a0a0a;   --ab-tx:#6b7280;
+}
+
+/* ══ BASE ════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--tx)}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:12px;
+  padding:14px;min-height:100vh;
+  transition:background .3s,color .3s
+}
+h1{font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:var(--h1)}
+.sub{color:var(--mu);font-size:11px}
+.lbl{font-size:10px;color:var(--mu);letter-spacing:.6px;text-transform:uppercase;margin-bottom:2px}
+.mono{font-family:'Courier New',Courier,monospace;font-size:12px}
+.gn{color:var(--gn)} .go{color:var(--go)} .ac{color:var(--ac)}
+
+/* ══ TOGGLE ══════════════════════════════════════════════ */
+#theme-toggle{
+  position:fixed;bottom:18px;right:16px;width:40px;height:40px;
+  border-radius:50%;border:1px solid var(--bd);background:var(--sf);
+  cursor:pointer;font-size:18px;z-index:9999;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+  display:flex;align-items:center;justify-content:center;transition:all .2s
+}
+#theme-toggle:hover{border-color:var(--ac);transform:scale(1.08)}
+
+/* ══ SPEC CARDS ══════════════════════════════════════════ */
+.specs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.spec-card{
+  background:var(--sf);border:1px solid var(--bd);
+  border-left:3px solid var(--ac);
+  border-radius:6px;padding:7px 10px;flex:1 1 100px;
+  box-shadow:var(--shadow)
+}
+.spec-val{font-size:13px;font-weight:bold;color:var(--ac);font-family:Arial,sans-serif}
+
+/* ══ FILTROS ═════════════════════════════════════════════ */
+.filters{display:flex;gap:6px;margin-bottom:10px}
+.btn{padding:5px 14px;border-radius:16px;border:1px solid var(--bd);
+  cursor:pointer;font-size:12px;font-family:Arial,sans-serif;
+  font-weight:bold;transition:all .2s}
+.btn-active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.btn-inactive{background:var(--sf);color:var(--tx2)}
+.btn-inactive:hover{border-color:var(--ac);color:var(--ac)}
+
+/* ══ TABLA ═══════════════════════════════════════════════ */
+.tbl-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--bd);box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse;min-width:800px}
+thead tr{background:var(--sf)}
+th{
+  padding:8px 7px;text-align:center;
+  color:var(--tx2);font-size:10px;letter-spacing:.8px;
+  font-weight:bold;font-family:Arial,sans-serif;
+  border-bottom:1px solid var(--bd);white-space:nowrap
+}
+td{
+  padding:6px 7px;border-bottom:1px solid var(--bd);
+  vertical-align:middle;font-family:Arial,sans-serif;font-size:12px
+}
+.tr-best{background:var(--rb-best);border-left:3px solid var(--rc-best)}
+.tr-alt {background:var(--rb-alt); border-left:3px solid var(--rc-alt)}
+.tr-bor {background:var(--rb-bor); border-left:3px solid var(--rc-bor)}
+.tr-last{border-bottom:2px solid var(--bd)!important}
+.target-cell{text-align:center;padding:6px 8px;border-right:1px solid var(--bd)}
+.target-box{
+  display:inline-block;background:var(--tbox);
+  border:1.5px solid var(--ac);border-radius:6px;padding:4px 8px
+}
+.target-lbl{font-size:9px;color:var(--mu);letter-spacing:.6px;text-transform:uppercase}
+.target-num{color:var(--ac);font-size:20px;font-weight:bold;font-family:Arial,sans-serif;line-height:1}
+.lc-best{color:var(--gn);font-weight:bold}
+.lc-alt {color:var(--tx2)}
+.lc-bor {color:var(--go)}
+.td-c{text-align:center}
+.td-r{text-align:right}
+.td-2{color:var(--tx2);font-size:11px}
+.td-mu{color:var(--mu);font-size:11px}
+.badge{
+  font-size:9px;padding:2px 5px;border-radius:3px;
+  font-weight:bold;white-space:nowrap;
+  font-family:Arial,sans-serif
+}
+.badge-best{background:var(--rc-best);color:#fff}
+.badge-alt {background:var(--rc-alt);color:var(--tx2)}
+.badge-bor {background:var(--rc-bor);color:#fff}
+.bar-wrap{display:flex;align-items:center;gap:5px}
+.bar-val{font-size:12px;font-weight:bold;color:var(--tx);min-width:34px;font-family:Arial,sans-serif}
+.bar-bg{width:56px;height:6px;background:var(--btrack);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%}
+
+/* ══ QUICK GRID ══════════════════════════════════════════ */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:6px;margin-top:8px}
+.qcard{background:var(--sf);border:1px solid var(--bd);border-radius:6px;padding:7px 9px;box-shadow:var(--shadow)}
+.qmeta{color:var(--ac);font-size:13px;font-weight:bold;font-family:Arial,sans-serif}
+.qcfg{color:var(--tx2);font-size:11px;font-family:Arial,sans-serif;margin:2px 0}
+.qcost{color:var(--gn);font-size:11px;font-weight:bold;font-family:Arial,sans-serif}
+.qtr{color:var(--mu);font-size:11px;font-family:Arial,sans-serif}
+
+/* ══ ALERTAS ═════════════════════════════════════════════ */
+.alert{border-radius:6px;padding:9px 11px;font-size:11px;line-height:1.7;margin-top:8px;font-family:Arial,sans-serif}
+.alert-red{background:var(--ar-bg);border:1px solid var(--ar-bd);color:var(--ar-tx)}
+.alert-blue{background:var(--ab-bg);border:1px solid var(--bd);color:var(--ab-tx)}
+
+/* ══ LEGEND / FOOTER ═════════════════════════════════════ */
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mu);font-family:Arial,sans-serif}
+.legend-dot{width:8px;height:8px;border-radius:2px}
+footer{margin-top:16px;text-align:center;padding:8px;border-top:1px solid var(--bd)}
+.admin-btn{background:none;border:1px solid var(--bd);color:var(--mu);
+  padding:4px 14px;border-radius:16px;cursor:pointer;
+  font-size:11px;font-family:Arial,sans-serif;transition:all .2s}
+.admin-btn:hover{border-color:var(--ac);color:var(--ac)}
+
+/* ══ MODAL ═══════════════════════════════════════════════ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;
+  display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--sf);border:1px solid var(--bd);border-radius:10px;
+  padding:20px;width:100%;max-width:420px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.modal h2{font-size:14px;margin-bottom:12px;color:var(--tx);font-family:Arial,sans-serif;font-weight:bold}
+.modal input[type=password]{width:100%;background:var(--inner);border:1px solid var(--bd);
+  color:var(--tx);padding:8px 11px;border-radius:5px;
+  font-size:12px;font-family:Arial,sans-serif;margin-bottom:9px}
+.modal input:focus{outline:none;border-color:var(--ac)}
+.btn-primary{background:var(--ac);color:#fff;border:none;padding:8px 18px;
+  border-radius:5px;font-weight:bold;cursor:pointer;
+  font-size:12px;font-family:Arial,sans-serif;width:100%}
+.btn-primary:hover{opacity:.9}
+.btn-secondary{background:var(--bd);color:var(--tx);border:none;padding:6px 14px;
+  border-radius:5px;font-weight:bold;cursor:pointer;
+  font-size:12px;font-family:Arial,sans-serif}
+.btn-secondary:hover{filter:brightness(.93)}
+[data-theme="dark"] .btn-secondary:hover{filter:brightness(1.2)}
+.err{color:var(--re);font-size:11px;margin-bottom:7px;font-family:Arial,sans-serif}
+
+/* ══ ADMIN ═══════════════════════════════════════════════ */
+.admin-panel{position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;padding:14px}
+.admin-header{display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bd)}
+.admin-header h2{color:var(--ac);font-size:14px;font-family:Arial,sans-serif;font-weight:bold}
+.tabs{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.tab{padding:5px 12px;border-radius:5px;border:1px solid var(--bd);cursor:pointer;
+  font-size:11px;font-weight:bold;font-family:Arial,sans-serif;
+  background:var(--sf);color:var(--tx2);transition:all .2s}
+.tab.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.section{background:var(--sf);border:1px solid var(--bd);border-radius:7px;padding:13px;margin-bottom:10px;box-shadow:var(--shadow)}
+.section h3{font-size:11px;color:var(--ac);letter-spacing:.8px;text-transform:uppercase;
+  margin-bottom:10px;font-family:Arial,sans-serif;font-weight:bold}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:7px}
+.field-row.three{grid-template-columns:1fr 1fr 1fr}
+label{font-size:11px;color:var(--mu);display:block;margin-bottom:3px;font-family:Arial,sans-serif}
+input[type=number],input[type=text],select{
+  background:var(--inner);border:1px solid var(--bd);color:var(--tx);
+  padding:6px 9px;border-radius:4px;
+  font-size:12px;font-family:Arial,sans-serif;width:100%}
+input:focus,select:focus{outline:none;border-color:var(--ac)}
+.calc-preview{background:var(--inner);border:1px solid var(--bd);border-radius:4px;
+  padding:7px 9px;font-size:11px;color:var(--mu);margin-bottom:7px;font-family:Arial,sans-serif}
+.calc-preview span{color:var(--tx2)}
+.rows-list{margin-top:7px}
+.row-item{display:flex;align-items:center;gap:6px;padding:6px 8px;
+  background:var(--inner);border-radius:4px;margin-bottom:4px;border-left:3px solid var(--bd)}
+.row-item.type-best{border-left-color:var(--rc-best)}
+.row-item.type-alt {border-left-color:var(--rc-alt)}
+.row-item.type-bor {border-left-color:var(--rc-bor)}
+.row-info{flex:1;font-size:11px;font-family:Arial,sans-serif;color:var(--tx2)}
+.row-info strong{color:var(--tx);font-size:12px;font-family:Arial,sans-serif}
+.row-actions{display:flex;gap:4px}
+.btn-edit,.btn-del{border:none;padding:3px 7px;border-radius:3px;cursor:pointer;
+  font-size:10px;font-weight:bold;font-family:Arial,sans-serif}
+.btn-edit{background:var(--edit-bg);color:var(--edit-col)}
+.btn-del{background:var(--del-bg);color:var(--del-col)}
+.btn-edit:hover,.btn-del:hover{filter:brightness(.92)}
+[data-theme="dark"] .btn-edit:hover,[data-theme="dark"] .btn-del:hover{filter:brightness(1.2)}
+.export-bar{position:sticky;bottom:0;background:var(--sf);border-top:1px solid var(--bd);
+  padding:11px;margin:-14px;margin-top:14px;display:flex;gap:8px;align-items:center}
+.btn-export{background:var(--ac);color:#fff;border:none;padding:9px 18px;
+  border-radius:5px;font-weight:bold;cursor:pointer;font-size:12px;
+  font-family:Arial,sans-serif;flex:1}
+.btn-export:hover{opacity:.9}
+.tip{font-size:10px;color:var(--mu);line-height:1.5;font-family:Arial,sans-serif}
+</style>
+</head>
+<body>
+
+<div id="view-public">
+  <div style="text-align:center;margin-bottom:12px">
+    <p style="color:var(--ac);font-size:10px;letter-spacing:2px;font-weight:bold;margin-bottom:3px;font-family:Arial,sans-serif">
+      AUTONOMÍA DE SISTEMA DE INVERSOR EN BOTES 43FT
+    </p>
+    <h1>GTX10 + Microondas MG23DG4524ATCO</h1>
+    <p class="sub" style="margin-top:2px">Banco Victron LiFePO4 NG 12.8V · DoD 80% · Temperatura ambiente 30–38°C</p>
+  </div>
+
+  <div class="specs" id="specs-strip"></div>
+
+  <div class="filters">
+    <button class="btn btn-active" id="btn-all" onclick="setFilter('all')">Todas las opciones</button>
+    <button class="btn btn-inactive" id="btn-best" onclick="setFilter('best')">Solo mejor precio</button>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>META</th><th>CONFIGURACIÓN BANCO</th><th># BAT</th>
+        <th>Ah TOTAL</th><th>Wh ÚTILES</th><th>GTX10 EFEC.</th>
+        <th>MICROONDAS</th><th>T. TEÓRICA</th><th>T. REAL</th>
+        <th>COSTO COP</th><th></th>
+      </tr></thead>
+      <tbody id="main-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#6b7280"></div>Mejor precio</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d4d4d4"></div>Alternativa</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c9a96e"></div>⚠️ Límite</div>
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">
+    <span class="sub">Barra:</span>
+    <span class="sub">🔴 &lt;4h · 🟡 4–7h · 🔵 7–10h · 🟢 &gt;10h</span>
+  </div>
+
+  <div style="margin-top:12px">
+    <p style="color:var(--ac);font-size:10px;font-weight:bold;letter-spacing:.8px;margin-bottom:7px;font-family:Arial,sans-serif">
+      GUÍA RÁPIDA · MEJOR PRECIO POR META
+    </p>
+    <div class="qgrid" id="quick-grid"></div>
+  </div>
+
+  <div class="alert alert-red" style="margin-top:10px">
+    <strong>⚠️ Inversor Mastervolt AC Master 12/2000 (Ref. 28512000):</strong>
+    Capacidad 2,000 W continuos. GTX10 (1,320 W) + Microondas (1,250 W) = <strong>2,570 W</strong> — excede límite.
+    <strong> No operar ambos equipos simultáneamente.</strong>
+    Para uso simultáneo: Mastervolt CombiMaster 12/3000.
+  </div>
+  <div class="alert alert-blue">
+    <strong style="color:var(--ac)">Metodología:</strong>
+    T_real = (Útil − 718.5 Wh) ÷ GTX10_efec. | T_teórica = (Útil − 625 Wh) ÷ 1,320 W | Útil = Ah × 12.8 V × 0.80
+  </div>
+
+  <footer>
+    <button class="admin-btn" onclick="showPwdModal()">⚙ Administrador</button>
+    <p class="sub" style="margin-top:5px">Vista pública — credenciales requeridas para modificar</p>
+  </footer>
+</div>
+
+<!-- MODAL CONTRASEÑA -->
+<div class="overlay" id="pwd-overlay" style="display:none">
+  <div class="modal">
+    <h2>🔐 Acceso Administrador</h2>
+    <p style="font-size:11px;color:var(--mu);margin-bottom:11px;font-family:Arial,sans-serif">Ingrese la contraseña para editar</p>
+    <div id="pwd-err" class="err" style="display:none"></div>
+    <input type="password" id="pwd-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')verifyPwd()">
+    <button class="btn-primary" onclick="verifyPwd()">Ingresar</button>
+    <br><br>
+    <button class="btn-secondary" style="width:100%" onclick="closePwd()">Cancelar</button>
+  </div>
+</div>
+
+<!-- PANEL ADMIN -->
+<div id="admin-panel" style="display:none">
+  <div class="admin-header">
+    <h2>⚙ Panel de Administrador</h2>
+    <button class="btn-secondary" onclick="closeAdmin()">✕ Cerrar</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('tp',this)">💰 Precios</button>
+    <button class="tab" onclick="switchTab('tpar',this)">⚡ Parámetros</button>
+    <button class="tab" onclick="switchTab('tr',this)">📋 Filas</button>
+    <button class="tab" onclick="switchTab('ts',this)">🔒 Seguridad</button>
+  </div>
+
+  <div id="tp" class="tab-content active">
+    <div class="section">
+      <h3>Precios de Baterías (COP)</h3>
+      <div class="field-row">
+        <div><label>BAT512120610 — 200Ah</label><input type="number" id="adm-p2" step="1000" onchange="updP()"></div>
+        <div><label>BAT512130620 — 300Ah</label><input type="number" id="adm-p3" step="1000" onchange="updP()"></div>
+      </div>
+      <p class="tip">Los costos se recalculan automáticamente en todas las filas.</p>
+    </div>
+  </div>
+
+  <div id="tpar" class="tab-content">
+    <div class="section">
+      <h3>Aire Acondicionado GTX10</h3>
+      <div class="field-row">
+        <div><label>Consumo nominal (W)</label><input type="number" id="adm-g" step="10" onchange="updPar()"></div>
+        <div><label>Duty cycle (%)</label><input type="number" id="adm-d" step="1" min="50" max="100" onchange="updPar()"></div>
+      </div>
+    </div>
+    <div class="section">
+      <h3>Microondas MG23DG4524ATCO</h3>
+      <div class="field-row">
+        <div><label>Consumo entrada (W)</label><input type="number" id="adm-mw" step="10" onchange="updPar()"></div>
+        <div><label>Tiempo de uso (min/día)</label><input type="number" id="adm-mm" step="1" min="1" max="120" onchange="updPar()"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tr" class="tab-content">
+    <div class="section">
+      <h3>Agregar / Editar Fila</h3>
+      <input type="hidden" id="eidx" value="-1">
+      <div class="field-row three">
+        <div><label>Meta (h)</label><input type="number" id="ft" min="1" max="24" step="1" oninput="prev()"></div>
+        <div><label>Bat. 200Ah (#)</label><input type="number" id="fq2" min="0" max="10" step="1" value="0" oninput="prev()"></div>
+        <div><label>Bat. 300Ah (#)</label><input type="number" id="fq3" min="0" max="10" step="1" value="0" oninput="prev()"></div>
+      </div>
+      <div style="margin-bottom:7px"><label>Etiqueta</label><input type="text" id="flb" placeholder="ej: 2× 200Ah + 1× 300Ah"></div>
+      <div style="margin-bottom:7px"><label>Tipo</label>
+        <select id="fty">
+          <option value="best">★ Mejor precio</option>
+          <option value="alt">Alternativa</option>
+          <option value="border">⚠️ Límite</option>
+        </select>
+      </div>
+      <div class="calc-preview" id="cprev"><span>Ingrese cantidades para ver el cálculo</span></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn-primary" id="btn-add" onclick="saveR()">+ Agregar fila</button>
+        <button class="btn-secondary" onclick="cancelE()" id="btn-ce" style="display:none">Cancelar</button>
+      </div>
+    </div>
+    <div class="section">
+      <h3>Filas Actuales</h3>
+      <div class="rows-list" id="rlist"></div>
+    </div>
+  </div>
+
+  <div id="ts" class="tab-content">
+    <div class="section">
+      <h3>Cambiar Contraseña</h3>
+      <div style="margin-bottom:7px"><label>Contraseña actual</label><input type="password" id="sop"></div>
+      <div style="margin-bottom:7px"><label>Nueva contraseña (mín. 6)</label><input type="password" id="snp"></div>
+      <div style="margin-bottom:7px"><label>Confirmar nueva</label><input type="password" id="scp"></div>
+      <div id="pmsg" style="font-size:11px;margin-bottom:7px;font-family:Arial,sans-serif"></div>
+      <button class="btn-primary" onclick="chgPwd()">Cambiar contraseña</button>
+      <p class="tip" style="margin-top:7px">Exporte el HTML para que el cambio quede guardado.</p>
+    </div>
+  </div>
+
+  <div class="export-bar">
+    <div>
+      <div style="font-size:11px;color:var(--ac);font-weight:bold;font-family:Arial,sans-serif">Exporte para guardar todos los cambios</div>
+      <p class="tip">Reemplaza el archivo en Google Drive — todos ven la versión actualizada</p>
+    </div>
+    <button class="btn-export" onclick="expHTML()">⬇ Exportar HTML</button>
+  </div>
+</div>
+
+<button id="theme-toggle" onclick="togT()" title="Claro / Oscuro">🌙</button>
+
+<script>
+let C=JSON.parse(document.getElementById('app-data').textContent);
+let filt='all';
+
+function togT(){
+  var cur=document.documentElement.getAttribute('data-theme')||'light';
+  var nxt=cur==='light'?'dark':'light';
+  document.documentElement.setAttribute('data-theme',nxt);
+  document.getElementById('theme-toggle').textContent=nxt==='dark'?'\u2600\uFE0F':'\uD83C\uDF19';
+  try{localStorage.setItem('inv-theme',nxt);}catch(e){}
+}
+window.addEventListener('DOMContentLoaded',function(){
+  var t=document.documentElement.getAttribute('data-theme')||'light';
+  var b=document.getElementById('theme-toggle');
+  if(b) b.textContent=t==='dark'?'\u2600\uFE0F':'\uD83C\uDF19';
+});
+
+function cR(r){
+  const ah=r.qty200*200+r.qty300*300;
+  const wh=Math.round(ah*12.8*.8);
+  const ef=C.gtx10Nominal*C.dutyCycle;
+  const mw=C.microwatts*(C.microDurationMin/60);
+  const pw=C.gtx10Nominal*(25/60);
+  const fx=pw-ef*(25/60)+mw;
+  return{...r,ah,wh,
+    tTh:Math.round(((wh-mw)/C.gtx10Nominal)*10)/10,
+    tR:Math.round(((wh-fx)/ef)*10)/10,
+    cost:r.qty200*C.price200+r.qty300*C.price300,
+    qty:r.qty200+r.qty300};
+}
+function rows(){return C.rows.map(cR).sort((a,b)=>a.target-b.target||a.cost-b.cost);}
+function $c(n){return'$'+n.toLocaleString('es-CO');}
+
+function rSpecs(){
+  const ef=Math.round(C.gtx10Nominal*C.dutyCycle);
+  const mw=Math.round(C.microwatts*(C.microDurationMin/60));
+  document.getElementById('specs-strip').innerHTML=[
+    {l:'GTX10 — Nominal',     v:C.gtx10Nominal.toLocaleString('es-CO')+' W', s:'Consumo con inversor'},
+    {l:'GTX10 — Efectivo',    v:ef.toLocaleString('es-CO')+' W',             s:'Duty '+Math.round(C.dutyCycle*100)+'% @ camarote'},
+    {l:'Microondas Input',    v:C.microwatts.toLocaleString('es-CO')+' W',   s:C.microDurationMin+' min/día = '+mw+' Wh'},
+    {l:'Pull-down AC',        v:'550 Wh',                                     s:'~25 min arranque'},
+    {l:'BAT512120610 200Ah',  v:$c(C.price200),                              s:'LiFePO4 Victron NG'},
+    {l:'BAT512130620 300Ah',  v:$c(C.price300),                              s:'LiFePO4 Victron NG'},
+  ].map(s=>`<div class="spec-card">
+    <div class="lbl">${s.l}</div>
+    <div class="spec-val">${s.v}</div>
+    <div class="sub">${s.s}</div>
+  </div>`).join('');
+}
+
+function rTable(){
+  const all=rows();
+  const tgts=[...new Set(all.map(r=>r.target))];
+  const tb=document.getElementById('main-tbody');
+  tb.innerHTML='';
+  tgts.forEach(tg=>{
+    const rs=all.filter(r=>r.target===tg);
+    const vs=filt==='all'?rs:rs.filter(r=>r.type==='best');
+    if(!vs.length) return;
+    vs.forEach((r,i)=>{
+      const last=i===vs.length-1;
+      const tc={best:'tr-best',alt:'tr-alt',border:'tr-bor'}[r.type];
+      const lc={best:'lc-best',alt:'lc-alt',border:'lc-bor'}[r.type];
+      const bg={best:'badge-best',alt:'badge-alt',border:'badge-bor'}[r.type];
+      const bl={best:'★ MEJOR',alt:'ALTERNATIVA',border:'⚠️ LÍMITE'}[r.type];
+      const pct=Math.min((r.tR/14)*100,100);
+      const bc=r.tR<4?'#b05252':r.tR<7?'#a07840':r.tR<10?'#406080':'#4a7a5a';
+      const ef=Math.round(C.gtx10Nominal*C.dutyCycle).toLocaleString('es-CO');
+      const tr=document.createElement('tr');
+      tr.className=tc+(last?' tr-last':'');
+      let h='';
+      if(i===0) h+=`<td class="target-cell" rowspan="${vs.length}">
+        <div class="target-box">
+          <div class="target-lbl">META</div>
+          <div class="target-num">${tg}h</div>
+        </div></td>`;
+      h+=`
+        <td><span class="${lc}">${r.label}</span></td>
+        <td class="td-c">${r.qty}</td>
+        <td class="td-c td-2">${r.ah.toLocaleString()}</td>
+        <td class="td-c td-2">${r.wh.toLocaleString()}</td>
+        <td class="td-c td-2">${ef} W</td>
+        <td class="td-c td-2">${C.microwatts.toLocaleString('es-CO')} W · ${C.microDurationMin}'</td>
+        <td class="td-c td-mu">${r.tTh.toFixed(1)}h</td>
+        <td><div class="bar-wrap">
+          <span class="bar-val">${r.tR.toFixed(1)}h</span>
+          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${bc}"></div></div>
+        </div></td>
+        <td class="td-r" style="font-weight:bold;white-space:nowrap;color:var(--gn)">${$c(r.cost)}</td>
+        <td class="td-c"><span class="badge ${bg}">${bl}</span></td>`;
+      tr.innerHTML=h; tb.appendChild(tr);
+    });
+  });
+}
+
+function rGrid(){
+  const all=rows();
+  const tgts=[...new Set(all.map(r=>r.target))];
+  document.getElementById('quick-grid').innerHTML=tgts.map(tg=>{
+    const b=all.find(r=>r.target===tg&&r.type==='best');
+    if(!b) return '';
+    return`<div class="qcard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+        <span class="qmeta">${tg}h</span><span class="qtr">${b.tR.toFixed(1)}h real</span>
+      </div>
+      <div class="qcfg">${b.label}</div>
+      <div class="qcost">${$c(b.cost)}</div>
+    </div>`;
+  }).join('');
+}
+
+function rAll(){rSpecs();rTable();rGrid();}
+
+function setFilter(f){
+  filt=f;
+  document.getElementById('btn-all').className='btn '+(f==='all'?'btn-active':'btn-inactive');
+  document.getElementById('btn-best').className='btn '+(f==='best'?'btn-active':'btn-inactive');
+  rTable();
+}
+
+async function sha(s){
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function showPwdModal(){
+  document.getElementById('pwd-overlay').style.display='flex';
+  document.getElementById('pwd-input').value='';
+  document.getElementById('pwd-err').style.display='none';
+  setTimeout(()=>document.getElementById('pwd-input').focus(),100);
+}
+function closePwd(){document.getElementById('pwd-overlay').style.display='none';}
+async function verifyPwd(){
+  const p=document.getElementById('pwd-input').value;
+  if(await sha(p)===C.adminHash){closePwd();openAdm();}
+  else{
+    const e=document.getElementById('pwd-err');
+    e.textContent='Contraseña incorrecta.';e.style.display='block';
+    document.getElementById('pwd-input').value='';
+    document.getElementById('pwd-input').focus();
+  }
+}
+function openAdm(){
+  document.getElementById('admin-panel').style.display='block';
+  document.getElementById('view-public').style.display='none';
+  document.getElementById('adm-p2').value=C.price200;
+  document.getElementById('adm-p3').value=C.price300;
+  document.getElementById('adm-g').value=C.gtx10Nominal;
+  document.getElementById('adm-d').value=Math.round(C.dutyCycle*100);
+  document.getElementById('adm-mw').value=C.microwatts;
+  document.getElementById('adm-mm').value=C.microDurationMin;
+  rList();
+}
+function closeAdmin(){
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('view-public').style.display='block';
+  rAll();
+}
+function switchTab(id,el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');el.classList.add('active');
+}
+function updP(){
+  C.price200=parseInt(document.getElementById('adm-p2').value)||C.price200;
+  C.price300=parseInt(document.getElementById('adm-p3').value)||C.price300;
+  rList();
+}
+function updPar(){
+  C.gtx10Nominal=parseInt(document.getElementById('adm-g').value)||C.gtx10Nominal;
+  C.dutyCycle=(parseFloat(document.getElementById('adm-d').value)/100)||C.dutyCycle;
+  C.microwatts=parseInt(document.getElementById('adm-mw').value)||C.microwatts;
+  C.microDurationMin=parseInt(document.getElementById('adm-mm').value)||C.microDurationMin;
+  rList();prev();
+}
+function prev(){
+  const q2=parseInt(document.getElementById('fq2').value)||0;
+  const q3=parseInt(document.getElementById('fq3').value)||0;
+  if(!q2&&!q3){document.getElementById('cprev').innerHTML='<span>Ingrese cantidades para ver el cálculo</span>';return;}
+  const r=cR({qty200:q2,qty300:q3,target:0,label:'',type:'best'});
+  document.getElementById('cprev').innerHTML=
+    `<span>Ah: </span>${r.ah.toLocaleString()} | `+
+    `<span>Wh: </span>${r.wh.toLocaleString()} | `+
+    `<span>T_teórica: </span>${r.tTh.toFixed(1)}h | `+
+    `<span>T_real: </span><strong style="color:var(--gn)">${r.tR.toFixed(1)}h</strong> | `+
+    `<span>Costo: </span><strong style="color:var(--gn)">${$c(r.cost)}</strong>`;
+}
+function saveR(){
+  const idx=parseInt(document.getElementById('eidx').value);
+  const row={
+    target:parseInt(document.getElementById('ft').value),
+    label:document.getElementById('flb').value.trim(),
+    qty200:parseInt(document.getElementById('fq2').value)||0,
+    qty300:parseInt(document.getElementById('fq3').value)||0,
+    type:document.getElementById('fty').value
+  };
+  if(!row.target||(!row.qty200&&!row.qty300)||!row.label){alert('Complete todos los campos.');return;}
+  if(idx===-1) C.rows.push(row);
+  else{C.rows[idx]=row;cancelE();}
+  resetF();rList();
+}
+function editR(i){
+  const r=C.rows[i];
+  document.getElementById('eidx').value=i;
+  document.getElementById('ft').value=r.target;
+  document.getElementById('flb').value=r.label;
+  document.getElementById('fq2').value=r.qty200;
+  document.getElementById('fq3').value=r.qty300;
+  document.getElementById('fty').value=r.type;
+  document.getElementById('btn-add').textContent='✓ Actualizar';
+  document.getElementById('btn-ce').style.display='inline-block';
+  prev();document.getElementById('ft').scrollIntoView({behavior:'smooth'});
+}
+function delR(i){if(!confirm('¿Eliminar?')) return;C.rows.splice(i,1);cancelE();rList();}
+function cancelE(){
+  document.getElementById('eidx').value=-1;
+  document.getElementById('btn-add').textContent='+ Agregar fila';
+  document.getElementById('btn-ce').style.display='none';resetF();
+}
+function resetF(){
+  document.getElementById('ft').value='';
+  document.getElementById('flb').value='';
+  document.getElementById('fq2').value=0;
+  document.getElementById('fq3').value=0;
+  document.getElementById('fty').value='best';
+  document.getElementById('cprev').innerHTML='<span>Ingrese cantidades para ver el cálculo</span>';
+}
+function rList(){
+  const list=document.getElementById('rlist');
+  const rs=C.rows.map((r,i)=>({...cR(r),_i:i})).sort((a,b)=>a.target-b.target||a.cost-b.cost);
+  list.innerHTML=rs.map(r=>`<div class="row-item type-${r.type}">
+    <div class="row-info"><strong>${r.target}h · ${r.label}</strong><br>
+      ${r.ah.toLocaleString()} Ah · T_real <strong style="color:var(--gn)">${r.tR.toFixed(1)}h</strong> · ${$c(r.cost)}
+    </div>
+    <div class="row-actions">
+      <button class="btn-edit" onclick="editR(${r._i})">Editar</button>
+      <button class="btn-del" onclick="delR(${r._i})">✕</button>
+    </div>
+  </div>`).join('')||'<p class="sub">No hay filas.</p>';
+}
+async function chgPwd(){
+  const o=document.getElementById('sop').value,n=document.getElementById('snp').value,cf=document.getElementById('scp').value;
+  const msg=document.getElementById('pmsg');
+  if(!o||!n||!cf){msg.style.color='var(--re)';msg.textContent='Complete todos los campos.';return;}
+  if(n.length<6){msg.style.color='var(--re)';msg.textContent='Mínimo 6 caracteres.';return;}
+  if(n!==cf){msg.style.color='var(--re)';msg.textContent='Las contraseñas no coinciden.';return;}
+  if(await sha(o)!==C.adminHash){msg.style.color='var(--re)';msg.textContent='Contraseña actual incorrecta.';return;}
+  C.adminHash=await sha(n);msg.style.color='var(--gn)';
+  msg.textContent='✓ Contraseña cambiada. Exporte el HTML para guardar.';
+  ['sop','snp','scp'].forEach(id=>document.getElementById(id).value='');
+}
+function expHTML(){
+  document.getElementById('app-data').textContent=JSON.stringify(C,null,2);
+  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='autonomia_inversor_43ft.html';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
+}
+rAll();
+</script>
+</body>
+</html>
