@@ -67,14 +67,14 @@
       <stop offset=".6" stop-color="#d9dfec" stop-opacity=".55"/>
       <stop offset="1" stop-color="#aab3c9" stop-opacity=".95"/>
     </linearGradient>
-    <linearGradient id="shoulder" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="shoulderGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#ffffff"/>
       <stop offset="1" stop-color="#dfe5f1"/>
     </linearGradient>
     <!-- Borde azul exterior -->
-    <linearGradient id="rim" x1="0" y1="1" x2="0" y2="0">
+    <linearGradient id="rim" gradientUnits="userSpaceOnUse" x1="0" y1="300" x2="0" y2="130">
       <stop offset="0" stop-color="#1d5fe6" stop-opacity="0"/>
-      <stop offset=".5" stop-color="#2b8bff"/>
+      <stop offset=".45" stop-color="#2b8bff"/>
       <stop offset="1" stop-color="#3bc1fe"/>
     </linearGradient>
     <!-- Cresta superior -->
@@ -86,19 +86,6 @@
     <linearGradient id="crestSide" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#1f7dff"/>
       <stop offset="1" stop-color="#02287e"/>
-    </linearGradient>
-    <!-- Cubo -->
-    <linearGradient id="cubeTop" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1ec4fe"/>
-      <stop offset="1" stop-color="#2f8cff"/>
-    </linearGradient>
-    <linearGradient id="cubeLeft" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1a63f0"/>
-      <stop offset="1" stop-color="#0238c4"/>
-    </linearGradient>
-    <linearGradient id="cubeRight" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#35a8ff"/>
-      <stop offset="1" stop-color="#0a7cf5"/>
     </linearGradient>
     <!-- Orejeras -->
     <linearGradient id="ear" x1="0" y1="0" x2="1" y2="1">
@@ -222,7 +209,7 @@
     <!-- Hombreras superiores -->
     <g id="shoulder">
       <path d="M476 166 C 498 136 540 114 580 108 L 600 132 L 618 182 L 634 258 L 592 240 L 548 220 L 538 192 Z"
-            fill="url(#shoulder)" stroke="#cdd5e4" stroke-width="3" stroke-linejoin="round"/>
+            fill="url(#shoulderGrad)" stroke="#cdd5e4" stroke-width="3" stroke-linejoin="round"/>
       <path d="M548 220 L 592 240 L 634 258" fill="none" stroke="#b9c3d8" stroke-width="3" opacity=".8"/>
       <path d="M498 150 C 520 130 548 118 578 114" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity=".9"/>
     </g>
@@ -230,24 +217,11 @@
 
     <!-- Cresta azul -->
     <g>
-      <path d="M548 128 C 560 96 612 70 668 50 C 704 38 742 30 768 28 C 794 30 832 38 868 50 C 924 70 976 96 988 128 L 958 170 L 578 170 Z" fill="url(#crest)"/>
-      <path d="M768 28 C 794 30 832 38 868 50 C 924 70 976 96 988 128 L 958 170 L 768 170 Z" fill="#ffffff" opacity=".12"/>
+      <path d="M548 128 C 560 96 612 70 668 50 C 704 38 742 30 768 28 C 794 30 832 38 868 50 C 924 70 976 96 988 128 C 930 190 606 190 578 170 Z" fill="url(#crest)"/>
+      <path d="M768 28 C 794 30 832 38 868 50 C 924 70 976 96 988 128 C 930 190 846 192 768 192 Z" fill="#ffffff" opacity=".12"/>
       <path d="M548 128 C 556 102 590 84 628 70 L 644 156 L 590 176 Z" fill="url(#crestSide)"/>
       <path d="M988 128 C 980 102 946 84 908 70 L 892 156 L 946 176 Z" fill="url(#crestSide)"/>
       <path d="M664 56 C 700 42 740 34 768 32" fill="none" stroke="#a9deff" stroke-width="5" stroke-linecap="round" opacity=".7"/>
-    </g>
-
-    <!-- Sombra del cubo sobre la frente -->
-    <polygon points="610,120 768,76 930,120 930,300 768,396 610,300" fill="#8e9dbd" opacity=".45" filter="url(#softLg)"/>
-
-    <!-- Cubo azul -->
-    <g stroke-linejoin="round">
-      <polygon points="622,123 768,85 914,123 768,165" fill="url(#cubeTop)"/>
-      <polygon points="622,123 768,165 768,386 622,298" fill="url(#cubeLeft)"/>
-      <polygon points="914,123 768,165 768,386 914,298" fill="url(#cubeRight)"/>
-      <polyline points="622,123 768,165 914,123" fill="none" stroke="#9fdcff" stroke-width="3" opacity=".65"/>
-      <line x1="768" y1="165" x2="768" y2="386" stroke="#7fd0ff" stroke-width="3" opacity=".5"/>
-      <polygon points="622,123 768,85 914,123 914,298 768,386 622,298" fill="none" stroke="#0a46d6" stroke-width="3" opacity=".5"/>
     </g>
 
     <!-- Bisel blanco alrededor de la pantalla -->
