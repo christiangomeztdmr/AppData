@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Robot Face</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --blue-glow: #1e90ff;
+    --eye: #a9fbff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); }
+  body {
+    display: grid;
+    place-items: center;
+    padding: 16px;
+  }
+  .robot {
+    width: min(100%, 960px);
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+
+  /* Animaciones suaves */
+  .float { animation: float 4.5s ease-in-out infinite; transform-origin: 768px 512px; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+  .eyes { animation: pulse 3.2s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .82; }
+  }
+  .eye { transform-box: fill-box; transform-origin: center; animation: blink 6s infinite; }
+  @keyframes blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95%           { transform: scaleY(.15); }
+  }
+  .ring { animation: ring 3.2s ease-in-out infinite; }
+  @keyframes ring {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .7; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .float, .eyes, .eye, .ring { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="robot" viewBox="0 0 1536 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cara de robot blanco y azul con ojos felices">
+  <defs>
+    <!-- ===== Gradientes ===== -->
+    <!-- Carcasa blanca -->
+    <radialGradient id="shell" cx="50%" cy="38%" r="70%">
+      <stop offset="0"   stop-color="#ffffff"/>
+      <stop offset=".62" stop-color="#fbfdff"/>
+      <stop offset=".86" stop-color="#e3e9f4"/>
+      <stop offset="1"   stop-color="#c3cadb"/>
+    </radialGradient>
+    <linearGradient id="chin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".6" stop-color="#d9dfec" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#aab3c9" stop-opacity=".95"/>
+    </linearGradient>
+    <linearGradient id="shoulder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dfe5f1"/>
+    </linearGradient>
+    <!-- Borde azul exterior -->
+    <linearGradient id="rim" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#1d5fe6" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#2b8bff"/>
+      <stop offset="1" stop-color="#3bc1fe"/>
+    </linearGradient>
+    <!-- Cresta superior -->
+    <linearGradient id="crest" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3c9bff"/>
+      <stop offset=".45" stop-color="#0f6dfb"/>
+      <stop offset="1" stop-color="#0a49d9"/>
+    </linearGradient>
+    <linearGradient id="crestSide" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f7dff"/>
+      <stop offset="1" stop-color="#02287e"/>
+    </linearGradient>
+    <!-- Cubo -->
+    <linearGradient id="cubeTop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1ec4fe"/>
+      <stop offset="1" stop-color="#2f8cff"/>
+    </linearGradient>
+    <linearGradient id="cubeLeft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a63f0"/>
+      <stop offset="1" stop-color="#0238c4"/>
+    </linearGradient>
+    <linearGradient id="cubeRight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#35a8ff"/>
+      <stop offset="1" stop-color="#0a7cf5"/>
+    </linearGradient>
+    <!-- Orejeras -->
+    <linearGradient id="ear" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4aa6ff"/>
+      <stop offset=".45" stop-color="#1a68f0"/>
+      <stop offset="1" stop-color="#0a3fc9"/>
+    </linearGradient>
+    <radialGradient id="earInner" cx="55%" cy="50%" r="60%">
+      <stop offset="0" stop-color="#2a8cff"/>
+      <stop offset=".7" stop-color="#1f6cf2"/>
+      <stop offset="1" stop-color="#4fbaff"/>
+    </radialGradient>
+    <!-- Bisel y pantalla -->
+    <linearGradient id="bezel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".55" stop-color="#f1f4fa"/>
+      <stop offset="1" stop-color="#cfd6e5"/>
+    </linearGradient>
+    <radialGradient id="screen" cx="50%" cy="45%" r="65%">
+      <stop offset="0"   stop-color="#01050f"/>
+      <stop offset=".7"  stop-color="#020812"/>
+      <stop offset="1"   stop-color="#0b1730"/>
+    </radialGradient>
+    <linearGradient id="glassL" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9db6e6" stop-opacity=".8"/>
+      <stop offset="1" stop-color="#8fa9d8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glassR" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b9cdf0" stop-opacity=".8"/>
+      <stop offset="1" stop-color="#a9bfe6" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Ojos -->
+    <linearGradient id="eyeFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5fd6ff"/>
+      <stop offset=".5" stop-color="#b6fcfe"/>
+      <stop offset="1" stop-color="#7fe6ff"/>
+    </linearGradient>
+
+    <!-- ===== Filtros ===== -->
+    <filter id="glow" x="-40%" y="-60%" width="180%" height="220%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="18" result="a1"/>
+      <feFlood flood-color="#1e7bff" result="c1"/>
+      <feComposite in="c1" in2="a1" operator="in" result="halo"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="7" result="a2"/>
+      <feFlood flood-color="#2fa4ff" result="c2"/>
+      <feComposite in="c2" in2="a2" operator="in" result="halo2"/>
+      <feMerge><feMergeNode in="halo"/><feMergeNode in="halo"/><feMergeNode in="halo2"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowSm" x="-40%" y="-200%" width="180%" height="500%">
+      <feGaussianBlur stdDeviation="6" result="b1"/>
+      <feMerge><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <filter id="softLg" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="drop" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#6b7896" flood-opacity=".35"/>
+    </filter>
+
+    <!-- Forma de la pantalla (reutilizada) -->
+    <path id="screenShape" d="M768 446
+      C 700 444, 640 408, 572 382
+      C 482 352, 386 384, 376 520
+      C 370 630, 398 726, 510 786
+      C 590 826, 690 846, 768 846
+      C 846 846, 946 826, 1026 786
+      C 1138 726, 1166 630, 1160 520
+      C 1150 384, 1054 352, 964 382
+      C 896 408, 836 444, 768 446 Z"/>
+    <clipPath id="rimClip"><rect x="250" y="100" width="1036" height="200"/></clipPath>
+    <clipPath id="screenClip"><use href="#screenShape"/></clipPath>
+
+    <!-- Silueta de la carcasa -->
+    <path id="shellShape" d="M768 932
+      C 520 932, 300 840, 296 640
+      C 292 480, 330 330, 440 214
+      C 478 176, 520 150, 565 134
+      L 971 134
+      C 1016 150, 1058 176, 1096 214
+      C 1206 330, 1244 480, 1240 640
+      C 1236 840, 1016 932, 768 932 Z"/>
+
+    <!-- Orejera izquierda (la derecha se espeja) -->
+    <g id="earShape">
+      <path d="M322 380 C 246 368 190 440 188 552 C 188 664 244 736 322 728 C 336 640 336 470 322 380 Z" fill="url(#ear)" filter="url(#drop)"/>
+      <path d="M296 392 C 236 392 204 446 202 520" fill="none" stroke="#9fe0ff" stroke-width="7" stroke-linecap="round" opacity=".7"/>
+      <ellipse cx="232" cy="540" rx="40" ry="116" fill="url(#earInner)" stroke="#6fd6ff" stroke-width="12" class="ring"/>
+      <ellipse cx="232" cy="540" rx="40" ry="116" fill="none" stroke="#d2fcfe" stroke-width="4" opacity=".9" filter="url(#glowSm)" class="ring"/>
+      <path d="M244 470 C 236 510 236 580 246 620" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity=".3"/>
+    </g>
+  </defs>
+
+  <g class="float">
+
+    <!-- Borde azul fino siguiendo la carcasa (zona superior) -->
+    <g clip-path="url(#rimClip)">
+      <use href="#shellShape" fill="none" stroke="url(#rim)" stroke-width="18" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Carcasa -->
+    <use href="#shellShape" fill="url(#shell)" filter="url(#drop)"/>
+    <use href="#shellShape" fill="url(#chin)"/>
+    <!-- Brillo inferior de la barbilla -->
+    <path d="M430 880 C 560 925 980 925 1106 880" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity=".8"/>
+
+    <!-- Reflejo azul de las orejeras sobre la carcasa -->
+    <ellipse cx="330" cy="640" rx="46" ry="110" fill="#2a8aff" opacity=".18" filter="url(#softLg)"/>
+    <ellipse cx="1206" cy="640" rx="46" ry="110" fill="#2a8aff" opacity=".18" filter="url(#softLg)"/>
+
+    <!-- Orejeras -->
+    <use href="#earShape"/>
+    <use href="#earShape" transform="translate(1536 0) scale(-1 1)"/>
+
+    <!-- Costuras del casco -->
+    <path id="seamL" d="M606 238 C 520 262 440 306 402 380" fill="none" stroke="#cdd5e4" stroke-width="4" stroke-linecap="round"/>
+    <use href="#seamL" transform="translate(1536 0) scale(-1 1)"/>
+
+    <!-- Hombreras superiores -->
+    <g id="shoulder">
+      <path d="M476 166 C 498 136 540 114 580 108 L 600 132 L 618 182 L 634 258 L 592 240 L 548 220 L 538 192 Z"
+            fill="url(#shoulder)" stroke="#cdd5e4" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M548 220 L 592 240 L 634 258" fill="none" stroke="#b9c3d8" stroke-width="3" opacity=".8"/>
+      <path d="M498 150 C 520 130 548 118 578 114" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+    </g>
+    <use href="#shoulder" transform="translate(1536 0) scale(-1 1)"/>
+
+    <!-- Cresta azul -->
+    <g>
+      <path d="M548 128 C 560 96 612 70 668 50 C 704 38 742 30 768 28 C 794 30 832 38 868 50 C 924 70 976 96 988 128 L 958 170 L 578 170 Z" fill="url(#crest)"/>
+      <path d="M768 28 C 794 30 832 38 868 50 C 924 70 976 96 988 128 L 958 170 L 768 170 Z" fill="#ffffff" opacity=".12"/>
+      <path d="M548 128 C 556 102 590 84 628 70 L 644 156 L 590 176 Z" fill="url(#crestSide)"/>
+      <path d="M988 128 C 980 102 946 84 908 70 L 892 156 L 946 176 Z" fill="url(#crestSide)"/>
+      <path d="M664 56 C 700 42 740 34 768 32" fill="none" stroke="#a9deff" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+    </g>
+
+    <!-- Sombra del cubo sobre la frente -->
+    <polygon points="610,120 768,76 930,120 930,300 768,396 610,300" fill="#8e9dbd" opacity=".45" filter="url(#softLg)"/>
+
+    <!-- Cubo azul -->
+    <g stroke-linejoin="round">
+      <polygon points="622,123 768,85 914,123 768,165" fill="url(#cubeTop)"/>
+      <polygon points="622,123 768,165 768,386 622,298" fill="url(#cubeLeft)"/>
+      <polygon points="914,123 768,165 768,386 914,298" fill="url(#cubeRight)"/>
+      <polyline points="622,123 768,165 914,123" fill="none" stroke="#9fdcff" stroke-width="3" opacity=".65"/>
+      <line x1="768" y1="165" x2="768" y2="386" stroke="#7fd0ff" stroke-width="3" opacity=".5"/>
+      <polygon points="622,123 768,85 914,123 914,298 768,386 622,298" fill="none" stroke="#0a46d6" stroke-width="3" opacity=".5"/>
+    </g>
+
+    <!-- Bisel blanco alrededor de la pantalla -->
+    <use href="#screenShape" fill="none" stroke="#b9c2d6" stroke-width="54" stroke-linejoin="round" opacity=".28" filter="url(#soft)"/>
+    <use href="#screenShape" fill="none" stroke="url(#bezel)" stroke-width="44" stroke-linejoin="round"/>
+    <use href="#screenShape" fill="none" stroke="#ffffff" stroke-width="12" stroke-linejoin="round" opacity=".9"/>
+
+    <!-- Pantalla -->
+    <use href="#screenShape" fill="url(#screen)"/>
+
+    <g clip-path="url(#screenClip)">
+      <!-- reflejos del cristal -->
+      <path d="M392 420 C 372 500 380 610 408 690 C 396 600 404 500 440 410 Z" fill="url(#glassL)"/>
+      <path d="M404 430 C 420 400 470 388 500 392" fill="none" stroke="#b4c8f0" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+      <path d="M986 392 C 1030 380 1090 392 1110 440 C 1070 420 1030 416 986 430 Z" fill="url(#glassR)"/>
+      <path d="M1140 540 C 1146 630 1120 710 1050 765" fill="none" stroke="#3c63b4" stroke-width="6" stroke-linecap="round" opacity=".35"/>
+      <path d="M480 780 C 600 828 700 836 768 836" fill="none" stroke="#2a4a8a" stroke-width="4" stroke-linecap="round" opacity=".35"/>
+    </g>
+
+    <!-- Ojos felices -->
+    <g class="eyes" filter="url(#glow)">
+      <path class="eye" fill="url(#eyeFill)" stroke="#39b6ff" stroke-width="7" stroke-linejoin="round"
+            d="M458 652 C 462 578 512 532 566 532 C 620 532 660 580 664 654 Q 662 664 652 658 C 636 624 604 596 562 596 C 520 596 488 624 470 660 Q 460 664 458 652 Z"/>
+      <path class="eye" fill="url(#eyeFill)" stroke="#39b6ff" stroke-width="7" stroke-linejoin="round"
+            d="M1078 652 C 1074 578 1024 532 970 532 C 916 532 876 580 872 654 Q 874 664 884 658 C 900 624 932 596 974 596 C 1016 596 1048 624 1066 660 Q 1076 664 1078 652 Z"/>
+    </g>
+
+    <!-- Sonrisa -->
+    <path d="M696 712 Q 768 748 840 712" fill="none" stroke="#35c4fb" stroke-width="5" stroke-linecap="round" filter="url(#glowSm)" class="eyes"/>
+
+  </g>
+</svg>
+
+</body>
+</html>
